@@ -62,23 +62,18 @@ router.get("/viewed/:id",
     }
 )
 
-router.put("/:id",    
-    [
-        check("title").not().isEmpty().withMessage("Title is required").trim(),    
-    ],
-    async (req, res) => {
-        // Check for validation errors
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ error: errors.array() });
-        }
 
+//since this is a put req and not a post, im assuming we just edit an existing user to add an existing show 
+//instead of adding an entire new show and then associating it with the user
+
+router.put("/:userId/shows/:showId",    
+    async (req, res) => {
         try {
-            // Find user by id
-            const user = await User.findByPk(req.params.id, {
+            // Find user by userId
+            const user = await User.findByPk(req.params.userId, {
                 include: {
                     model: Show,
-                    through: { attributes: [] },  // Exclude the 'through' table attributes (optional)
+                    through: { attributes: [] },  
                 },
             });
 
@@ -86,21 +81,19 @@ router.put("/:id",
                 return res.status(404).json({ error: "User not found" });
             }
 
-            // Find show by title
-            const show = await Show.findOne({ where: { title: req.body.title } });
+            // Find show by showId
+            const show = await Show.findByPk(req.params.showId);
 
             if (!show) {
                 return res.status(404).json({ error: "Show not found" });
             }
 
-            // Add the show to the user's associated shows
             await user.addShow(show);
 
-            // Fetch the user again after the show has been added
-            const userAfterShow = await User.findByPk(req.params.id, {
+            const userAfterShow = await User.findByPk(req.params.userId, {
                 include: {
                     model: Show,
-                    through: { attributes: [] },  // Exclude the 'through' table attributes (optional)
+                    through: { attributes: [] },  
                 },
             });
 
@@ -112,6 +105,57 @@ router.put("/:id",
         }
     }
 );
+
+// router.put("/:id",    
+//     [
+//         check("title").not().isEmpty().withMessage("Title is required").trim(),    
+//     ],
+//     async (req, res) => {
+//         // Check for validation errors
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             return res.status(400).json({ error: errors.array() });
+//         }
+
+//         try {
+//             // Find user by id
+//             const user = await User.findByPk(req.params.id, {
+//                 include: {
+//                     model: Show,
+//                     through: { attributes: [] },  // Exclude the 'through' table attributes (optional)
+//                 },
+//             });
+
+//             if (!user) {
+//                 return res.status(404).json({ error: "User not found" });
+//             }
+
+//             // Find show by title
+//             const show = await Show.findOne({ where: { title: req.body.title } });
+
+//             if (!show) {
+//                 return res.status(404).json({ error: "Show not found" });
+//             }
+
+//             await user.addShow(show);
+
+//             const userAfterShow = await User.findByPk(req.params.id, {
+//                 include: {
+//                     model: Show,
+//                     through: { attributes: [] },  
+//                 },
+//             });
+
+//             res.json(userAfterShow);
+
+//         } catch (err) {
+//             console.error(err);
+//             res.status(500).json({ error: "Server error" });
+//         }
+//     }
+// );
+
+
 
 
 module.exports = router
