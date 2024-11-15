@@ -66,6 +66,7 @@ router.get("/viewed/:id",
 
 
 // PUT update the available property of a show
+
 router.put("/:id/available",    
     [
         check("available").not().isEmpty().withMessage("Availability is required").isBoolean().withMessage("Availability must be a boolean")
@@ -91,12 +92,11 @@ router.put("/:id/available",
             await show.update({available:req.body.available})
 
             const updatedShow = await Show.findByPk(req.params.id);
-
+            
             res.json(updatedShow);
         }
     }
 );
-
 
 
 
