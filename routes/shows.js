@@ -115,6 +115,25 @@ router.delete("/:id",
     }
 )
 
+router.get("/genre/:genre", async (req, res) => {
+    const genre = req.params.genre;
+
+    
+
+    try {
+        const shows = await Show.findAll({ where: { genre } });
+ 
+
+        if (!shows.length) {
+            return res.status(204).send(); // if no shows match the genre
+        }
+
+        res.json(shows);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to retrieve shows by genre" });
+    }
+});
+
 
 
 
