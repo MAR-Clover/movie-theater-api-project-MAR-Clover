@@ -85,7 +85,7 @@ router.put("/:id/available",
                 },
             });
             if (!show) {
-                return res.status(404).json({ error: "show not found" });
+                return res.status(404).json({ error: "show not afound" });
             }
 
             //update show's availability
@@ -94,9 +94,29 @@ router.put("/:id/available",
             const updatedShow = await Show.findByPk(req.params.id);
             
             res.json(updatedShow);
-        }
+        } 
     }
 );
+
+
+router.delete("/:id",
+    async(req,res) => {
+        try{
+            //delete show
+            //console.log(" DELETE SHOWS TESTING")
+            await Show.destroy({where:{id:req.params.id}})
+            const shows = await Show.findAll();
+            res.status(200).json(shows)
+           
+        }catch(error){
+           // console.log(" DELETE SHOWS ERROR TESTING")
+            res.status(400).json({error: "failed to delete show"})
+        }
+    }
+)
+
+
+
 
 
 

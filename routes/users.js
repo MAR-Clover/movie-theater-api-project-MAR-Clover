@@ -30,7 +30,7 @@ router.get('/:id',
 
 //get only shows watched by user with ID in params
 
-router.get("/viewed/:id",
+router.get("/:id/shows",
     async(req,res) => {
         const errors = validationResult(req)
         if(!errors.isEmpty()){
@@ -105,6 +105,19 @@ router.put("/:userId/shows/:showId",
         }
     }
 );
+
+router.delete(":/id",
+    async(req,res) => {
+        try{
+            //delete user
+            await User.destroy({where:{id:req.params.id}})
+            const users = await User.findAll();
+            res.status(200).json(users)
+        }catch(error){
+            res.status(400).json({error: "failed to delete user"})
+        }
+    }
+)
 
 // router.put("/:id",    
 //     [
